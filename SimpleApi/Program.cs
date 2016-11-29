@@ -12,6 +12,7 @@ namespace SimpleApi
     public class Program
     {
 
+        public static IConfigurationSection SimpleApiConfig;
         static IWebHost WebHost;
 
         public static void Main(string[] args)
@@ -26,6 +27,13 @@ namespace SimpleApi
 
             Console.WriteLine("Config built...");
 
+            SimpleApiConfig = new ConfigurationBuilder()
+                .SetBasePath(Directory
+                .GetCurrentDirectory())
+                .AddJsonFile("props.json", optional: true, reloadOnChange: true)
+                .Build()
+                .GetSection("SimpleApi");
+
             WebHost = new WebHostBuilder()
                 .UseConfiguration(config) 
                 .UseKestrel()
@@ -37,7 +45,7 @@ namespace SimpleApi
             Console.WriteLine("WebHost built...");
 
             WebHost.Run();
-            
+
         }
     }
 }
