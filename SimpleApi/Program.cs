@@ -6,26 +6,44 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
+using NLog;
 
 namespace SimpleApi
 {
     public class Program
     {
 
+        private static Logger Logger = LogManager.GetCurrentClassLogger();
         public static IConfigurationSection SimpleApiConfig;
         static IWebHost WebHost;
 
         public static void Main(string[] args)
         {
+            try {
+                _Main(args);
+            }
+            catch(Exception ex)
+            {
+                Logger.Fatal("{0} \n     StackTrace:\n     {1}",ex.Message,ex.StackTrace);
+            }
+        }
 
-            Console.WriteLine("Starting SimpleApi...");
+        private static void _Main(string[] args)
+        {
+            if (null == Logger)
+            {
+                Console.WriteLine("Logger is null!!!!");
+                throw new ArgumentNullException("logger");
+            }
+            
+            Logger.Info("Starting SimpleApi...");
 
             var config = new ConfigurationBuilder()
                 .AddCommandLine(args)
                 .AddEnvironmentVariables(prefix: "ASPNETCORE_")
                 .Build();
 
-            Console.WriteLine("Config built...");
+            Logger.Debug("Config built...");
 
             SimpleApiConfig = new ConfigurationBuilder()
                 .SetBasePath(Directory
@@ -42,7 +60,7 @@ namespace SimpleApi
                 .UseStartup<Startup>()
                 .Build();
             
-            Console.WriteLine("WebHost built...");
+            Logger.Debug("WebHost built...");
 
             WebHost.Run();
 
